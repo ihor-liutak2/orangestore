@@ -1,0 +1,20 @@
+# ==========================
+# Database configuration
+# ==========================
+db.driver=
+db.url=
+db.user=
+db.password=
+
+# ==========================
+# Hibernate
+# ==========================
+hibernate.dialect=
+hibernate.show_sql=
+hibernate.hbm2ddl.auto=
+
+# ==========================
+# Other secrets
+# ==========================
+app.secret=
+jwt.secret=
