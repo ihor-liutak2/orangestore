@@ -103,6 +103,37 @@
         </configuration>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.4.1</version>
+        <executions>
+          <execution>
+            <id>enforce</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+
+                <!-- Require Java 17 or higher -->
+                <requireJavaVersion>
+                  <version>[17,)</version>
+                </requireJavaVersion>
+
+                <!-- Require specific Maven version -->
+                <requireMavenVersion>
+                  <version>[3.8,)</version>
+                </requireMavenVersion>
+
+              </rules>
+              <fail>true</fail>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
     </plugins>
 
   </build>
