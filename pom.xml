@@ -60,6 +60,63 @@
           <target>17</target>
         </configuration>
       </plugin>
+
+      <!-- Maven WAR Plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.3.2</version>
+        <configuration>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>check-and-start-tomcat</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <executable>sh</executable>
+          <arguments>
+            <argument>-c</argument>
+            <argument>
+              curl -s http://localhost:8080 &gt; /dev/null || /opt/tomcat/bin/startup.sh
+            </argument>
+          </arguments>
+        </configuration>
+      </plugin>
+
+
+      <!-- Cargo Maven Plugin (Tomcat 10+ Deployment) -->
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven3-plugin</artifactId>
+        <version>1.9.0</version>
+        <configuration>
+          <container>
+            <containerId>tomcat10x</containerId>
+            <type>remote</type>
+          </container>
+          <configuration>
+            <type>runtime</type>
+            <properties>
+              <cargo.tomcat.manager.url>http://localhost:8080/manager/text</cargo.tomcat.manager.url>
+              <cargo.remote.username>admin</cargo.remote.username>
+              <cargo.remote.password>admin</cargo.remote.password>
+            </properties>
+          </configuration>
+        </configuration>
+      </plugin>
+
     </plugins>
 
   </build>
