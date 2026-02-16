@@ -38,9 +38,10 @@ public class HelloServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         Map<String, Object> model = new HashMap<>();
-        model.put("title", "OrangeStore");
+        model.put("title", "OrangeStore - Hello");
+        model.put("contextPath", request.getContextPath());
         model.put("message", "Hello from OrangeStore 🍊");
-        model.put("description", "Tomcat + FreeMarker are working correctly!");
+        model.put("description", "Tomcat + FreeMarker + Bootstrap are working correctly!");
 
         try {
             Template template = cfg.getTemplate("hello.ftl");
