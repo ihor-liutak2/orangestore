@@ -158,26 +158,90 @@ Manager UI: http://localhost:8080/manager/html
 Manager text API: http://localhost:8080/manager/text
 
 
-Збірка WAR
+## 🏗 Збірка та деплой застосунку
+
+### 📦 1. Збірка WAR-файлу
+
+Для створення WAR-архіву виконайте команду:
+
 ```bash
 mvn clean package
 ```
 
-Після цього WAR буде тут:
+Після успішної збірки файл буде створено за шляхом:
 
+```
 target/orangestore.war
+```
 
-Деплой через Maven (Cargo)
+---
 
-Maven налаштований на деплой через Tomcat Manager:
+### 🚀 2. Деплой через Maven (Cargo)
 
-URL: http://localhost:8080/manager/text
+Проєкт налаштований на автоматичний деплой у **Apache Tomcat** за допомогою Maven Cargo Plugin.
 
-username/password: admin/admin (з tomcat-users.xml)
+#### 🔗 Параметри підключення до Tomcat Manager:
 
-Команда деплою:
+- **URL:** `http://localhost:8080/manager/text`
+- **Логін / пароль:** `admin / admin`  
+  (налаштовуються у файлі `conf/tomcat-users.xml`)
+
+---
+
+### ⚙ Налаштування користувача Tomcat Manager
+
+Відкрий файл:
+
+```
+$CATALINA_HOME/conf/tomcat-users.xml
+```
+
+Додай:
+
+```xml
+<role rolename="manager-script"/>
+```
+
+```xml
+<role rolename="manager-gui"/>
+```
+
+```xml
+<user username="admin" password="admin" roles="manager-script,manager-gui"/>
+```
+
+Після цього перезапусти Tomcat.
+
+---
+
+### ▶ Виконати деплой
+
 ```bash
 mvn cargo:deploy
 ```
 
-(За потреби також можна додати cargo:redeploy для повторного деплою.)
+---
+
+### 🔄 Запуск із автоматичним стартом Tomcat
+
+Для одночасної збірки, запуску Tomcat та деплою застосунку:
+
+```bash
+mvn clean package cargo:run
+```
+
+Після запуску застосунок буде доступний за адресою:
+
+```
+http://localhost:8080/orangestore
+```
+
+---
+
+### 🛑 Зупинка сервера
+
+Для зупинки Tomcat достатньо натиснути:
+
+```
+Ctrl + C
+```

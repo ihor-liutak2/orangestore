@@ -1,4 +1,4 @@
-package ua.nung.orangestore.util;
+package ua.edu.nung.fit.orangestore.util;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
