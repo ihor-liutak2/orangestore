@@ -100,6 +100,15 @@ project.properties.example
 ```sql
 CREATE DATABASE orangestore;
 ```
+Перевірка чи працює MySQL сервер
+
+```bash
+sudo service mysql status
+```
+
+```bash
+sudo service mysql start
+```
 
 ## Запуск проекту
 
@@ -245,3 +254,207 @@ http://localhost:8080/orangestore
 ```
 Ctrl + C
 ```
+
+
+# Database Migrations (Flyway) – orangestore
+
+## Overview
+
+This project uses **Flyway** for database schema migrations and **Hibernate** only for validation (not schema generation).
+
+Architecture:
+
+- Flyway → manages database schema
+- Hibernate → validates schema (`hbm2ddl.auto=validate`)
+- Tomcat → runs application only
+- Migrations are executed manually via Maven
+
+---
+
+## Project Structure
+
+```
+src/main/resources/
+    project.properties
+    db/
+        migration/
+            V1__init_schema.sql
+            V2__add_units.sql
+            V3__add_prices.sql
+```
+
+---
+
+## project.properties
+
+```properties
+# ==========================
+# Database (Hibernate)
+# ==========================
+db.driver=com.mysql.cj.jdbc.Driver
+db.url=jdbc:mysql://localhost:3306/orangestore?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+db.user=ihorlt
+db.password=1122
+
+# ==========================
+# Flyway
+# ==========================
+flyway.url=jdbc:mysql://localhost:3306/orangestore?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+flyway.user=ihorlt
+flyway.password=1122
+
+# ==========================
+# Hibernate
+# ==========================
+hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+hibernate.show_sql=true
+hibernate.hbm2ddl.auto=validate
+
+# ==========================
+# Security
+# ==========================
+app.secret=verySecretKey123
+jwt.secret=myJwtSecret
+```
+
+Explanation:
+- `db.*` → used by Hibernate
+- `flyway.*` → used by Flyway Maven plugin
+
+---
+
+## Maven Configuration (pom.xml)
+
+Add Flyway plugin inside `<build><plugins>`:
+
+```xml
+<plugin>
+    <groupId>org.flywaydb</groupId>
+    <artifactId>flyway-maven-plugin</artifactId>
+    <version>10.17.0</version>
+
+    <configuration>
+        <configFiles>
+            <configFile>src/main/resources/project.properties</configFile>
+        </configFiles>
+
+        <locations>
+            <location>filesystem:src/main/resources/db/migration</location>
+        </locations>
+    </configuration>
+</plugin>
+```
+
+Also ensure dependency exists:
+
+```xml
+<dependency>
+    <groupId>org.flywaydb</groupId>
+    <artifactId>flyway-core</artifactId>
+    <version>10.17.0</version>
+</dependency>
+```
+
+---
+
+## Migration Naming Convention
+
+Flyway uses versioned SQL files:
+
+```
+V1__init_schema.sql
+V2__create_units.sql
+V3__create_fruit_prices.sql
+V4__create_orders.sql
+```
+
+Rules:
+- Must start with `V`
+- Followed by version number
+- Double underscore `__`
+- Description
+- `.sql` extension
+
+---
+
+## Running Migrations
+
+Run migrations locally:
+
+```
+mvn flyway:migrate
+```
+
+Other useful commands:
+
+```
+mvn flyway:info
+mvn flyway:validate
+mvn flyway:repair
+mvn flyway:clean   (⚠ deletes schema)
+```
+
+---
+
+## How It Works
+
+1. Flyway scans `db/migration`
+2. Executes new SQL files in version order
+3. Stores applied migrations in table:
+
+```
+flyway_schema_history
+```
+
+4. Hibernate validates schema at runtime
+
+---
+
+## Development Workflow
+
+1. Create new SQL file:
+   ```
+   V5__add_stock_movements.sql
+   ```
+
+2. Run:
+   ```
+   mvn flyway:migrate
+   ```
+
+3. Start Tomcat:
+   ```
+   mvn clean package
+   ```
+
+4. Deploy WAR
+
+---
+
+## Important Notes
+
+- Do NOT use `hibernate.hbm2ddl.auto=create` or `update`
+- Always keep it:
+  ```
+  hibernate.hbm2ddl.auto=validate
+  ```
+- Never modify already executed migration files
+- Create a new migration instead
+
+---
+
+## Final Architecture
+
+```
+users
+fruits
+units
+fruit_prices
+fruit_images
+orders
+order_items
+```
+
+Flyway manages schema evolution.
+Hibernate manages ORM.
+Tomcat runs the application.

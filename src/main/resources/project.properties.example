@@ -6,6 +6,11 @@ db.url=
 db.user=
 db.password=
 
+flyway.url=
+flyway.user=
+flyway.password=
+flyway.cleanDisabled=false
+
 # ==========================
 # Hibernate
 # ==========================
