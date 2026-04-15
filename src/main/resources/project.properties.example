@@ -23,3 +23,15 @@ hibernate.hbm2ddl.auto=
 # ==========================
 app.secret=
 jwt.secret=
+
+# Firebase Admin
+firebase.service.account.path=/.../firebase-service-account.json
+
+# Firebase Web Config
+firebase.web.apiKey=
+firebase.web.authDomain=
+firebase.web.projectId=
+firebase.web.storageBucket=
+firebase.web.messagingSenderId=
+firebase.web.appId=
+firebase.web.measurementId=

@@ -1,28 +1,18 @@
-CREATE TABLE users
-(
-    id           BIGINT PRIMARY KEY AUTO_INCREMENT,
-
-    -- Firebase UID (основний ідентифікатор)
-    firebase_uid VARCHAR(128) NOT NULL UNIQUE,
-
-    -- Email з Firebase
-    email        VARCHAR(255) NOT NULL UNIQUE,
-
-    -- Роль у системі
-    role         VARCHAR(50)  NOT NULL DEFAULT 'USER',
-
-    -- Статус
-    enabled      BOOLEAN      NOT NULL DEFAULT TRUE,
-
-    -- Аудит
-    created_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-
-    -- Додаткові поля (опційно)
-    first_name   VARCHAR(100),
-    last_name    VARCHAR(100),
-
-    INDEX        idx_users_role (role)
+CREATE TABLE users (
+       id BIGINT PRIMARY KEY AUTO_INCREMENT,
+       firebase_uid VARCHAR(128) NOT NULL UNIQUE,
+       email VARCHAR(255) NOT NULL UNIQUE,
+       display_name VARCHAR(255) NULL,
+       first_name VARCHAR(100) NULL,
+       last_name VARCHAR(100) NULL,
+       photo_url VARCHAR(500) NULL,
+       provider VARCHAR(50) NULL,
+       role VARCHAR(50) NOT NULL DEFAULT 'USER',
+       enabled TINYINT(1) NOT NULL DEFAULT 1,
+       email_verified TINYINT(1) NOT NULL DEFAULT 0,
+       last_login_at TIMESTAMP NULL DEFAULT NULL,
+       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+       updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 );
 
 

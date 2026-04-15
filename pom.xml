@@ -4,94 +4,119 @@
 
   <groupId>ua.edu.nung.fit</groupId>
   <artifactId>orangestore</artifactId>
-
-  <packaging>war</packaging>
   <version>1.0-SNAPSHOT</version>
+  <packaging>war</packaging>
 
   <name>Orange Store Maven Webapp</name>
-  <url>http://maven.apache.org</url>
+
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <jakarta.servlet.version>6.0.0</jakarta.servlet.version>
+    <hibernate.version>6.6.48.Final</hibernate.version>
+    <mysql.version>8.0.33</mysql.version>
+    <flyway.version>10.17.0</flyway.version>
+    <freemarker.version>2.3.34</freemarker.version>
+    <firebase.admin.version>9.7.0</firebase.admin.version>
+    <jackson.version>2.17.2</jackson.version>
+    <junit.jupiter.version>5.10.2</junit.jupiter.version>
+  </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- Jakarta Servlet API (для Tomcat 10+) -->
+    <!-- Servlet API for Tomcat 10 -->
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
-      <version>6.0.0</version>
+      <version>${jakarta.servlet.version}</version>
       <scope>provided</scope>
+    </dependency>
+
+    <!-- Optional but explicit -->
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <version>3.1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>${hibernate.version}</version>
     </dependency>
 
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
-      <version>8.0.33</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <version>5.4.33.Final</version>
+      <version>${mysql.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
-      <version>10.17.0</version>
+      <version>${flyway.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-mysql</artifactId>
-      <version>10.17.0</version>
+      <version>${flyway.version}</version>
     </dependency>
 
-
-    <!-- Source: https://mvnrepository.com/artifact/org.freemarker/freemarker -->
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
-      <version>2.3.34</version>
+      <version>${freemarker.version}</version>
     </dependency>
-</dependencies>
+
+    <dependency>
+      <groupId>com.google.firebase</groupId>
+      <artifactId>firebase-admin</artifactId>
+      <version>${firebase.admin.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+
+    <!-- Modern test dependency -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
   <build>
     <finalName>orangestore</finalName>
 
     <plugins>
-      <!-- Maven Compiler Plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.13.0</version>
         <configuration>
-          <source>17</source>
-          <target>17</target>
+          <release>17</release>
         </configuration>
       </plugin>
 
-      <!-- Maven WAR Plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.3.2</version>
+        <version>3.4.0</version>
         <configuration>
           <failOnMissingWebXml>false</failOnMissingWebXml>
         </configuration>
       </plugin>
 
-
-      <!-- Cargo Maven Plugin (Tomcat 10+ Deployment) -->
       <plugin>
         <groupId>org.codehaus.cargo</groupId>
         <artifactId>cargo-maven3-plugin</artifactId>
         <version>1.9.0</version>
-
         <configuration>
           <container>
             <containerId>tomcat10x</containerId>
@@ -106,7 +131,6 @@
               <cargo.remote.password>admin</cargo.remote.password>
             </properties>
           </configuration>
-
           <deployables>
             <deployable>
               <groupId>${project.groupId}</groupId>
@@ -120,19 +144,16 @@
       <plugin>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-maven-plugin</artifactId>
-        <version>10.17.0</version>
-
+        <version>${flyway.version}</version>
         <configuration>
           <configFiles>
             <configFile>src/main/resources/project.properties</configFile>
           </configFiles>
-
           <locations>
             <location>filesystem:src/main/resources/db/migration</location>
           </locations>
         </configuration>
       </plugin>
-
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -146,17 +167,12 @@
             </goals>
             <configuration>
               <rules>
-
-                <!-- Require Java 17 or higher -->
                 <requireJavaVersion>
                   <version>[17,)</version>
                 </requireJavaVersion>
-
-                <!-- Require specific Maven version -->
                 <requireMavenVersion>
-                  <version>[3.8,)</version>
+                  <version>[3.6,)</version>
                 </requireMavenVersion>
-
               </rules>
               <fail>true</fail>
             </configuration>
@@ -164,6 +180,11 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+      </plugin>
     </plugins>
   </build>
 </project>

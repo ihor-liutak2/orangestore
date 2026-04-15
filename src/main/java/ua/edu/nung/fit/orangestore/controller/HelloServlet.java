@@ -10,23 +10,32 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 @WebServlet("/hello")
 public class HelloServlet extends HttpServlet {
 
-    private Configuration cfg;
+    private Configuration freemarkerConfig;
 
     @Override
     public void init() throws ServletException {
-        cfg = new Configuration(Configuration.VERSION_2_3_34);
-        cfg.setClassLoaderForTemplateLoading(
+        Object config = getServletContext().getAttribute("freemarkerConfig");
+
+        if (config instanceof Configuration) {
+            this.freemarkerConfig = (Configuration) config;
+            return;
+        }
+
+        Configuration configuration = new Configuration(Configuration.VERSION_2_3_34);
+        configuration.setClassLoaderForTemplateLoading(
                 Thread.currentThread().getContextClassLoader(),
                 "templates"
         );
-        cfg.setDefaultEncoding("UTF-8");
+        configuration.setDefaultEncoding("UTF-8");
+
+        this.freemarkerConfig = configuration;
     }
 
     @Override
@@ -34,22 +43,38 @@ public class HelloServlet extends HttpServlet {
                          HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("text/html");
-        response.setCharacterEncoding("UTF-8");
-
         Map<String, Object> model = new HashMap<>();
         model.put("title", "OrangeStore - Hello");
-        model.put("contextPath", request.getContextPath());
         model.put("message", "Hello from OrangeStore 🍊");
         model.put("description", "Tomcat + FreeMarker + Bootstrap are working correctly!");
 
+        renderTemplate(request, response, "hello.ftl", model);
+    }
+
+    private void renderTemplate(HttpServletRequest request,
+                                HttpServletResponse response,
+                                String templateName,
+                                Map<String, Object> model)
+            throws IOException, ServletException {
+
+        response.setContentType("text/html; charset=UTF-8");
+
         try {
-            Template template = cfg.getTemplate("hello.ftl");
-            Writer out = response.getWriter();
-            template.process(model, out);
+            Map<String, Object> mergedModel = new HashMap<>();
+
+            Enumeration<String> attributeNames = request.getAttributeNames();
+            while (attributeNames.hasMoreElements()) {
+                String name = attributeNames.nextElement();
+                mergedModel.put(name, request.getAttribute(name));
+            }
+
+            mergedModel.putAll(model);
+
+            Template template = freemarkerConfig.getTemplate(templateName);
+            template.process(mergedModel, response.getWriter());
+
         } catch (TemplateException e) {
-            throw new ServletException(e);
+            throw new ServletException("Failed to render template: " + templateName, e);
         }
     }
 }
-

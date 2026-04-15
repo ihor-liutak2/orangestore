@@ -2,3 +2,4 @@
 src/main/resources/project.properties
 /orangestore.iml
 target
+/firebase-service-account.json

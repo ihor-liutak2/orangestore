@@ -32,7 +32,7 @@ orangestore
 └── main
 ├── java
 │ └── ua.nung.orangestore
-│ ├── model/ # Сутності (Entity класи)
+│ ├── ua.edu.nung.fit.orangestore.model/ # Сутності (Entity класи)
 │ ├── dao/ # Доступ до бази даних
 │ ├── service/ # Бізнес-логіка
 │ └── util/ # Допоміжні класи (HibernateUtil)
